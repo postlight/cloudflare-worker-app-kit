@@ -1,0 +1,54 @@
+{
+  "name": "cloudflare-worker-app-kit",
+  "description": "Create a TypeScript app that is delivered with CloudFlare Workers",
+  "version": "1.0.0",
+  "author": "Postlight",
+  "bin": {
+    "cloudflare-worker-app-kit": "./bin/run"
+  },
+  "bugs": "https://github.com/postlight/cloudflare-worker-app-kit/issues",
+  "dependencies": {
+    "@oclif/command": "1.5.11",
+    "@oclif/config": "1.12.9",
+    "@oclif/plugin-help": "2.1.6",
+    "tslib": "1.9.3"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "1.21.2",
+    "@types/node": "10.12.29",
+    "globby": "8.0.2",
+    "prettier": "1.16.4",
+    "ts-node": "8.0.2",
+    "typescript": "3.3.3333"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "homepage": "https://github.com/postlight/cloudflare-worker-app-kit",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "cloudflare-worker-app-kit",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": "postlight/cloudflare-worker-app-kit",
+  "scripts": {
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "test": "echo NO TESTS",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "types": "lib/index.d.ts"
+}
