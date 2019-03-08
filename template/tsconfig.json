@@ -2,19 +2,18 @@
   "compileOnSave": true,
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "composite": true,
-    "declaration": true,
-    "importHelpers": true,
     "jsx": "react",
     "jsxFactory": "h",
     "lib": ["es5", "es6", "es7", "dom", "webworker"],
-    "module": "esnext",
+    "module": "commonjs",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
+    "pretty": true,
     "strict": true,
-    "target": "es2017",
+    "sourceMap": true,
+    "target": "es5",
     "typeRoots": ["node_modules/@types", "src/@types"]
   },
   "include": ["src/**/*"]
