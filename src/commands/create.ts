@@ -59,7 +59,15 @@ export default class Create extends Command {
     try {
       await Promise.all([
         install(targetDir, false, "preact", "preact-render-to-string"),
-        install(targetDir, true, "typescript", "parcel-bundler")
+        install(
+          targetDir,
+          true,
+          "@dollarshaveclub/cloudworker",
+          "parcel-bundler",
+          "prettier",
+          "serve-static",
+          "typescript"
+        )
       ]);
     } catch (err) {
       console.error(err);
