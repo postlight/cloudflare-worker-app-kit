@@ -10,7 +10,20 @@ addEventListener("fetch", (e: Event) => {
 });
 
 async function router(request: Request) {
-  const { html } = await htmlString("url.pathname");
+  const url = new URL(request.url);
+  const segments = url.pathname.split("/");
+
+  // First, check if request is for static asset. If so, send request on to
+  // origin, the add a cache header to the response.
+  if (segments[1] && segments[1] === "assets") {
+    const assetRes = await fetch(request);
+    const response = new Response(assetRes.body, assetRes);
+    // response.headers.set("cache-control", "public, max-age=31536000");
+    return response;
+  }
+
+  // Render page
+  const { html } = await htmlString();
   return new Response(page("Worker App", html), {
     status: 200,
     headers: {
@@ -20,6 +33,6 @@ async function router(request: Request) {
 }
 
 // Render app as a string
-async function htmlString(path: string) {
+async function htmlString() {
   return { html: render(<App />) };
 }
