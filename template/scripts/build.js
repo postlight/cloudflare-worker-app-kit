@@ -1,27 +1,39 @@
-const path = require("path");
-const Bundler = require("parcel-bundler");
+const webpack = require("webpack");
+const clientConfig = require("../config/webpack.client");
+const workerConfig = require("../config/webpack.worker");
 
 console.time("Build complete");
 
-const entries = [
-  path.join(__dirname, "../src", "client.tsx"),
-  path.join(__dirname, "../src", "worker.tsx")
-];
-const bundler = new Bundler(entries, {
-  contentHash: true,
-  logLevel: 2,
-  minify: true,
-  publicUrl: "/assets/js",
-  watch: false
+webpack([clientConfig(true), workerConfig(true)], (err, stats) => {
+  if (err) {
+    return console.error(err.stack || err, err.details || "");
+  }
+
+  const info = stats.toJson({
+    all: false,
+    errors: true,
+    warnings: true,
+    assets: true
+  });
+  if (stats.hasErrors()) {
+    return console.error(info.errors);
+  }
+  if (stats.hasWarnings()) {
+    return console.warn(info.warnings);
+  }
+
+  console.timeEnd("Build complete");
+  const [clientStats, workerStats] = info.children;
+  console.log("-----------------------------------------");
+  clientStats.assets.forEach(assetResult);
+  workerStats.assets.forEach(assetResult);
+  console.log("");
 });
 
-(async () => {
-  const bun = await bundler.bundle();
-  console.timeEnd("Build complete");
-  bun.childBundles.forEach(child => {
-    const file = `dist/${path.basename(child.name)}`;
-    const size = `${Math.round(child.totalSize / 1024)}KB`;
-    console.log(`* ${file} - ${size}`);
-  });
-  console.log("");
-})();
+function assetResult(asset) {
+  const size =
+    asset.size > 1024
+      ? `${Math.round(asset.size / 1024)} KB`
+      : `${asset.size} B`;
+  console.log(`* ${asset.name} - ${size}`);
+}

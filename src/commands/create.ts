@@ -63,10 +63,17 @@ export default class Create extends Command {
           targetDir,
           true,
           "@dollarshaveclub/cloudworker",
-          "parcel-bundler",
+          "cross-spawn",
+          "css-loader",
+          "mini-css-extract-plugin",
+          "null-loader",
           "prettier",
           "serve-static",
-          "typescript"
+          "style-loader",
+          "ts-loader",
+          "typescript",
+          "webpack",
+          "webpack-dev-middleware"
         )
       ]);
     } catch (err) {

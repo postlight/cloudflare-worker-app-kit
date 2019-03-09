@@ -1,26 +1,22 @@
 const path = require("path");
 const http = require("http");
-const Bundler = require("parcel-bundler");
 const staticMiddleware = require("serve-static");
 const Cloudworker = require("@dollarshaveclub/cloudworker");
+const webpack = require("webpack");
+const webpackDevMiddleware = require("webpack-dev-middleware");
+const clientConfig = require("../config/webpack.client");
+const workerConfig = require("../config/webpack.worker");
 
 // Static assets server and bundler
 const staticPort = 3333;
-const entries = [
-  path.join(__dirname, "../src", "client.tsx"),
-  path.join(__dirname, "../src", "worker.tsx")
-];
-const bundler = new Bundler(entries, {
-  publicUrl: "/assets/js",
-  watch: true,
-  minify: false,
-  logLevel: 2,
-  hmr: true
+const compiler = webpack([clientConfig(), workerConfig()]);
+const serveWebpack = webpackDevMiddleware(compiler, {
+  logLevel: "warn",
+  publicPath: "/assets"
 });
-const serveBundle = bundler.middleware();
 const serveStatic = staticMiddleware(path.join(__dirname, ".."));
 http
-  .createServer(assetsHandler(serveError, serveBundle, serveStatic, notFound))
+  .createServer(assetsHandler(serveError, serveWebpack, serveStatic, notFound))
   .listen(staticPort);
 
 function assetsHandler(errHandler, ...steps) {
@@ -60,23 +56,25 @@ http
     let body;
     try {
       [script, body] = await Promise.all([
-        getScript(`http://localhost:${staticPort}/assets/js/worker.js`),
+        getScript(`http://localhost:${staticPort}/assets/worker/worker.js`),
         parseBody(req)
       ]);
     } catch (err) {
-      return console.error(err);
+      return console.error(
+        "Unable to fetch script or parse request body:",
+        err
+      );
     }
 
-    const worker = new Cloudworker(script, { bindings });
-    const workerReq = new Cloudworker.Request(
-      `http://localhost:${staticPort}${req.url}`,
-      {
-        method: req.method,
-        body
-      }
-    );
-
     try {
+      const worker = new Cloudworker(script, { bindings });
+      const workerReq = new Cloudworker.Request(
+        `http://localhost:${staticPort}${req.url}`,
+        {
+          method: req.method,
+          body
+        }
+      );
       const workerRes = await worker.dispatch(workerReq);
       const workerBuff = await workerRes.buffer();
       res.writeHead(
@@ -94,7 +92,9 @@ http
     if (err) {
       return console.log("Server error", err);
     }
-    console.log(`Dev server: http://localhost:${workerPort}`);
+    console.log(`Dev server ready => http://localhost:${workerPort}`);
+    console.log("-----------------------------------------");
+    console.log("");
   });
 
 async function parseBody(req) {

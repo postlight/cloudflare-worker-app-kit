@@ -1,4 +1,5 @@
 import { h, FunctionalComponent } from "preact";
+import "./app.css";
 
 export const App: FunctionalComponent<{}> = () => (
   <div>
