@@ -1,5 +1,6 @@
 const path = require("path");
 const http = require("http");
+const fetch = require("node-fetch");
 const staticMiddleware = require("serve-static");
 const Cloudworker = require("@dollarshaveclub/cloudworker");
 const webpack = require("webpack");
@@ -106,17 +107,11 @@ async function parseBody(req) {
   }
 }
 
-function getScript(url) {
-  return new Promise((resolve, reject) => {
-    http.get(url, res => {
-      if (res.statusCode !== 200) {
-        res.resume();
-        return reject(new Error(`${res.statusCode}: ${res.statusMessage}`));
-      }
-      res.setEncoding("utf8");
-      let data = "";
-      res.on("data", chunk => (data += chunk));
-      res.on("end", () => resolve(data));
-    });
-  });
+async function getScript(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    response.statusMessage;
+    throw new Error(`${res.statusCode}: ${res.statusMessage}`);
+  }
+  return response.text();
 }

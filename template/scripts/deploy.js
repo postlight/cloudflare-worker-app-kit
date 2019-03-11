@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { URLSearchParams } = require("url");
+const FormData = require("form-data");
 const spawn = require("cross-spawn");
 const mapLimit = require("async/mapLimit");
 const S3 = require("aws-sdk/clients/s3");
@@ -31,33 +31,9 @@ const bucket = process.env.BUCKET;
   const metadataJson = metadata(jsFiles, cssFiles);
 
   // update worker
-  const cfApi = "https://api.cloudflare.com/client/v4";
-  const zoneId = process.env.CF_ZONE_ID;
-  const email = process.env.CF_EMAIL;
-  const key = process.env.CF_KEY;
   const scriptPath = path.resolve(__dirname, "../dist", files.worker[0]);
   const script = fs.readFileSync(scriptPath, "utf8");
-  const params = new URLSearchParams();
-  params.append("metadata", `${metadataJson};type=application/json`);
-  params.append("script", `${script};type=application/javsacript`);
-  console.log(params.toString());
-  try {
-    const response = await fetch(`${cfApi}/zones/${zoneId}/workers/script`, {
-      method: "PUT",
-      body: params.toString(),
-      headers: {
-        "X-Auth-Email": email,
-        "X-Auth-Key": key
-      }
-    });
-    if (response.ok) {
-      console.log(`Worker deployed at ${new Date().toISOString()}`);
-    } else {
-      console.error("Worker deploy to CF failed");
-    }
-  } catch (err) {
-    console.error("Worker deploy to CF failed", err);
-  }
+  updateWorker(script, metadataJson);
 })();
 
 function npm(...commands) {
@@ -150,7 +126,7 @@ function upload(src, dest, bucket) {
         CacheControl: "public, max-age=31536000",
         ContentType: contentType(path.extname(src)),
         Expires: oneYear(),
-        Key: `testing/${dest}`
+        Key: dest
       },
       (err, data) => {
         if (err) return reject(err);
@@ -183,4 +159,31 @@ function oneYear() {
   const d = new Date();
   d.setFullYear(d.getFullYear() + 1);
   return d.getTime();
+}
+
+async function updateWorker(script, metadata) {
+  const cfApi = "https://api.cloudflare.com/client/v4";
+  const zoneId = process.env.CF_ZONE_ID;
+  const email = process.env.CF_EMAIL;
+  const key = process.env.CF_KEY;
+  const form = new FormData();
+  form.append("script", script);
+  form.append("metadata", metadata);
+  try {
+    const response = await fetch(`${cfApi}/zones/${zoneId}/workers/script`, {
+      method: "PUT",
+      body: form,
+      headers: {
+        "X-Auth-Email": email,
+        "X-Auth-Key": key
+      }
+    });
+    if (response.ok) {
+      console.log(`Worker deployed at ${new Date().toISOString()}`);
+    } else {
+      console.error("Worker deploy to CF failed:", response.statusText);
+    }
+  } catch (err) {
+    console.error("Worker deploy to CF failed", err);
+  }
 }
