@@ -7,6 +7,7 @@ const webpack = require("webpack");
 const webpackDevMiddleware = require("webpack-dev-middleware");
 const clientConfig = require("../config/webpack.client");
 const workerConfig = require("../config/webpack.worker");
+const metadata = require("./metadata");
 
 // Static assets server and bundler
 const staticPort = 3333;
@@ -50,7 +51,6 @@ function notFound(req, res) {
 // fetched from the static asset server, then a cloudworker is initialized, the
 // request is dispatched, and finally, the worker response is sent back.
 const workerPort = 3030;
-const bindings = {};
 http
   .createServer(async (req, res) => {
     let script;
@@ -68,6 +68,8 @@ http
     }
 
     try {
+      // Bindings are exposed as variables in the root of the worker script.
+      const bindings = mapMetadataToBindings();
       const worker = new Cloudworker(script, { bindings });
       const workerReq = new Cloudworker.Request(
         `http://localhost:${staticPort}${req.url}`,
@@ -114,4 +116,20 @@ async function getScript(url) {
     throw new Error(`${res.statusCode}: ${res.statusMessage}`);
   }
   return response.text();
+}
+
+function mapMetadataToBindings() {
+  const output = {};
+  const data = metadata(["js/client.js"]);
+  data.bindings.forEach(bind => {
+    switch (bind.type) {
+      case "secret_text":
+        output[bind.name] = bind.text;
+        break;
+      case "kv_namespace":
+        output[bind.name] = new Cloudworker.KeyValueStore();
+        break;
+    }
+  });
+  return output;
 }

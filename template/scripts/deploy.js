@@ -6,6 +6,7 @@ const mapLimit = require("async/mapLimit");
 const S3 = require("aws-sdk/clients/s3");
 const fetch = require("node-fetch");
 const build = require("./build");
+const metadata = require("./metadata");
 
 const s3 = new S3({
   accessKeyId: process.env.AWS_KEY,
@@ -28,7 +29,7 @@ const bucket = process.env.BUCKET;
   // update metadata
   const jsFiles = files.client.filter(filename => /\.js$/.test(filename));
   const cssFiles = files.client.filter(filename => /\.css$/.test(filename));
-  const metadataJson = metadata(jsFiles, cssFiles);
+  const metadataJson = JSON.stringify(metadata(jsFiles, cssFiles));
 
   // update worker
   const scriptPath = path.resolve(__dirname, "../dist", files.worker[0]);
@@ -44,36 +45,6 @@ function npm(...commands) {
       reject(`Error running npm command - ${code}`);
     });
   });
-}
-
-function metadata(jsFiles, cssFiles, namespaces) {
-  const data = {
-    body_part: "script",
-    bindings: [
-      {
-        name: "JS_FILES",
-        type: "secret_text",
-        text: jsFiles.join(";")
-      },
-      {
-        name: "CSS_FILES",
-        type: "secret_text",
-        text: cssFiles.join(";")
-      }
-    ]
-  };
-
-  if (namespaces) {
-    data.bindings = data.bindings.concat(
-      namespaces.map(ns => ({
-        name: ns.name,
-        type: "kv_namespace",
-        namespace_id: ns.id
-      }))
-    );
-  }
-
-  return JSON.stringify(data);
 }
 
 function s3UploadDirectory(dir) {
