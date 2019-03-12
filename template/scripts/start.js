@@ -95,9 +95,11 @@ http
     if (err) {
       return console.log("Server error", err);
     }
-    console.log(`Dev server ready => http://localhost:${workerPort}`);
-    console.log("-----------------------------------------");
-    console.log("");
+    console.log(`
+-----------------------------------------
+Dev server ready => http://localhost:${workerPort}
+-----------------------------------------
+`);
   });
 
 async function parseBody(req) {
