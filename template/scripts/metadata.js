@@ -25,7 +25,7 @@ module.exports = function metadata(jsFiles = [], cssFiles = []) {
   if (nsEnvVar) {
     const namespaces = splitKeyVals(nsEnvVar);
     data.bindings = data.bindings.concat(
-      namespaces.map(([name, inamespace_id]) => ({
+      namespaces.map(([name, namespace_id]) => ({
         name,
         type: "kv_namespace",
         namespace_id
@@ -38,9 +38,9 @@ module.exports = function metadata(jsFiles = [], cssFiles = []) {
   // CF_WORKER_BINDINGS="KEY_ONE somevalue, KEY_TWO anothervalue"
   const bindingEnvVar = process.env.CF_WORKER_BINDINGS;
   if (bindingEnvVar) {
-    const bindings = splitKeyVals(bindingEnvVar);
+    const customBindings = splitKeyVals(bindingEnvVar);
     data.bindings = data.bindings.concat(
-      namespaces.map(([name, text]) => ({
+      customBindings.map(([name, text]) => ({
         name,
         type: "secret_text",
         text
