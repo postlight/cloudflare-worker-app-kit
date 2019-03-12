@@ -58,7 +58,7 @@ export default class Create extends Command {
     // npm install
     try {
       await Promise.all([
-        install(targetDir, false, "preact", "preact-render-to-string"),
+        install(targetDir, false, "preact", "preact-render-to-string@4.1.0"),
         install(
           targetDir,
           true,

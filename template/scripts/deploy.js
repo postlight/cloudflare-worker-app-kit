@@ -16,35 +16,37 @@ const s3 = new S3({
 const bucket = process.env.BUCKET;
 
 (async () => {
-  // build
-  await npm("install");
-  const files = await build();
+  try {
+    // build
+    await npm("install");
+    const files = await build();
 
-  // copy files to s3
-  await Promise.all([
-    s3UploadDirectory(path.join(__dirname, "../dist")),
-    s3UploadDirectory(path.join(__dirname, "../assets"))
-  ]);
+    // copy files to s3
+    await Promise.all([
+      s3UploadDirectory(path.join(__dirname, "../dist")),
+      s3UploadDirectory(path.join(__dirname, "../assets"))
+    ]);
 
-  // update metadata
-  const jsFiles = files.client.filter(filename => /\.js$/.test(filename));
-  const cssFiles = files.client.filter(filename => /\.css$/.test(filename));
-  const metadataJson = JSON.stringify(metadata(jsFiles, cssFiles));
+    // update metadata
+    const jsFiles = files.client.filter(filename => /\.js$/.test(filename));
+    const cssFiles = files.client.filter(filename => /\.css$/.test(filename));
+    const metadataJson = JSON.stringify(metadata(jsFiles, cssFiles));
 
-  // update worker
-  const scriptPath = path.resolve(__dirname, "../dist", files.worker[0]);
-  const script = fs.readFileSync(scriptPath, "utf8");
-  updateWorker(script, metadataJson);
+    // update worker
+    const scriptPath = path.resolve(__dirname, "../dist", files.worker[0]);
+    const script = fs.readFileSync(scriptPath, "utf8");
+    updateWorker(script, metadataJson);
+  } catch (err) {
+    console.error(err);
+  }
 })();
 
 function npm(...commands) {
-  return new Promise((resolve, reject) => {
-    const proc = spawn("npm", ...commands, { stdio: "inherit" });
-    proc.on("close", code => {
-      if (code === 0) return resolve();
-      reject(`Error running npm command - ${code}`);
-    });
-  });
+  const result = spawn.sync("npm", commands, { stdio: "inherit" });
+  if (result.status !== 0) {
+    throw new Error(result.stderr.toString());
+  }
+  return;
 }
 
 function s3UploadDirectory(dir) {
@@ -82,20 +84,21 @@ function fileList(dir) {
       }
     });
   };
-  ls(dir, "");
+  ls(dir, "assets/");
   return output;
 }
 
 function upload(src, dest, bucket) {
   const buff = fs.readFileSync(src);
   return new Promise((resolve, reject) => {
+    const ext = path.extname(src).replace(/^\./, "");
     s3.upload(
       {
         ACL: "public-read",
         Body: buff,
         Bucket: bucket,
         CacheControl: "public, max-age=31536000",
-        ContentType: contentType(path.extname(src)),
+        ContentType: contentType(ext),
         Expires: oneYear(),
         Key: dest
       },
@@ -115,7 +118,7 @@ function contentType(ext) {
     ico: "image/x-icon",
     jpeg: "image/jpg",
     jpg: "image/jpg",
-    js: "application/x-javascript",
+    js: "application/javascript",
     json: "application/json",
     map: "application/json",
     png: "image/png",
@@ -132,14 +135,14 @@ function oneYear() {
   return d.getTime();
 }
 
-async function updateWorker(script, metadata) {
+async function updateWorker(script, metadataJson) {
   const cfApi = "https://api.cloudflare.com/client/v4";
   const zoneId = process.env.CF_ZONE_ID;
   const email = process.env.CF_EMAIL;
   const key = process.env.CF_KEY;
   const form = new FormData();
   form.append("script", script);
-  form.append("metadata", metadata);
+  form.append("metadata", metadataJson);
   try {
     const response = await fetch(`${cfApi}/zones/${zoneId}/workers/script`, {
       method: "PUT",
@@ -155,6 +158,6 @@ async function updateWorker(script, metadata) {
       console.error("Worker deploy to CF failed:", response.statusText);
     }
   } catch (err) {
-    console.error("Worker deploy to CF failed", err);
+    console.error("Worker deploy to CF failed:", err);
   }
 }
