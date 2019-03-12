@@ -23,8 +23,22 @@ async function router(request: Request) {
   }
 
   // Render page
+  let scripts;
+  let stylesheets;
   const { html } = await htmlString();
-  return new Response(page("Worker App", html), {
+  if (JS_FILES) {
+    scripts = JS_FILES.split(" ");
+  }
+  if (CSS_FILES) {
+    stylesheets = CSS_FILES.split(" ");
+  }
+  const renderedPage = page({
+    title: "Worker App",
+    content: html,
+    scripts,
+    stylesheets
+  });
+  return new Response(renderedPage, {
     status: 200,
     headers: {
       "content-type": "text/html; charset=utf-8"
@@ -36,3 +50,7 @@ async function router(request: Request) {
 async function htmlString() {
   return { html: render(<App />) };
 }
+
+// Worker bindings defined in metadata.js
+declare const JS_FILES: string | undefined;
+declare const CSS_FILES: string | undefined;

@@ -1,9 +1,9 @@
 interface PageInit {
   title: string;
   content: string;
-  scripts: string[];
-  stylesheets: string[];
-  json: string;
+  scripts?: string[];
+  stylesheets?: string[];
+  json?: string;
 }
 
 export function page({
