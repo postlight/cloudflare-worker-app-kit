@@ -12,7 +12,7 @@ export function page({
   scripts = [],
   stylesheets = [],
   json = ""
-}: PageInit) {
+}: PageInit): string {
   const scriptTags = scripts
     .map(script => `<script src="/assets/${script}" defer></script>`)
     .join("\n");

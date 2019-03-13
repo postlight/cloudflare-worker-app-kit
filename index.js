@@ -58,11 +58,18 @@ Installing dependencies...
         targetDir,
         true,
         "@dollarshaveclub/cloudworker",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
         "acorn",
         "async",
         "aws-sdk",
         "cross-spawn",
         "css-loader",
+        "eslint-config-prettier",
+        "eslint-plugin-jest",
+        "eslint-plugin-prettier",
+        "eslint-plugin-react",
+        "eslint",
         "form-data",
         "mini-css-extract-plugin",
         "node-fetch",
@@ -72,8 +79,8 @@ Installing dependencies...
         "style-loader",
         "ts-loader",
         "typescript",
-        "webpack",
-        "webpack-dev-middleware"
+        "webpack-dev-middleware",
+        "webpack"
       )
     ]);
   } catch (err) {
@@ -126,7 +133,7 @@ function writePackageJson(name, targetDir) {
     scripts: {
       build: "node scripts/build.js",
       deploy: "node scripts/deploy.js",
-      lint: "eslint",
+      lint: "eslint --config config/eslintrc.js --ext .js,.ts,.tsx ./src",
       start: "node scripts/start.js",
       test: "jest"
     }

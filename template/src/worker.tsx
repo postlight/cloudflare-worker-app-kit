@@ -3,13 +3,17 @@ import { render } from "preact-render-to-string";
 import { page } from "./page";
 import { App } from "./components/app";
 
+// Worker bindings defined in metadata.js
+declare const JS_FILES: string | undefined;
+declare const CSS_FILES: string | undefined;
+
 // Handle all requests hitting the worker
 addEventListener("fetch", (e: Event) => {
   const fe = e as FetchEvent;
   fe.respondWith(router(fe.request));
 });
 
-async function router(request: Request) {
+async function router(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const segments = url.pathname.split("/");
 
@@ -25,7 +29,7 @@ async function router(request: Request) {
   // Render page
   let scripts;
   let stylesheets;
-  const { html } = await htmlString();
+  const { html } = await serverRender();
   if (JS_FILES) {
     scripts = JS_FILES.split(" ");
   }
@@ -46,11 +50,11 @@ async function router(request: Request) {
   });
 }
 
-// Render app as a string
-async function htmlString() {
-  return { html: render(<App />) };
+interface RenderResult {
+  html: string;
 }
 
-// Worker bindings defined in metadata.js
-declare const JS_FILES: string | undefined;
-declare const CSS_FILES: string | undefined;
+// Render app as a string
+async function serverRender(): Promise<RenderResult> {
+  return { html: render(<App />) };
+}
