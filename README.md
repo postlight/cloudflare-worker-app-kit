@@ -16,12 +16,12 @@ This `create` command scaffolds your project with the following:
 
 ## How the app works
 
-Like any server-side rendered app this runs in two environments — [client](src/client.ts) and [worker](src/worker.ts). The client entry point is typical of most single-page, JavaScript applicatons where the root component is rendered into a container on the page. 
+Like any server-side rendered app this runs in two environments — [client](src/client.ts) and [worker](src/worker.ts). The client entry point is typical of most single-page, JavaScript applicatons where the root component is rendered into a container on the page.
 
 The worker entry points is where things are a little different.
 [TODO: DETAILS HERE]
 
-That's it, no origin server. Just some files on S3 and a little JS to handle requests. The result is a fast, server-rendered web app that can handle 10 million requests for $5 — not bad!
+That's it, no origin server. Just some files on S3 and a little JS to handle requests. The result is a fast, server-rendered web app that can handle 10 million requests for \$5 — not bad!
 
 ### Project structure
 
@@ -51,6 +51,7 @@ src/
 After you build the app there will also be `dist` directory where you'll find JS and CSS bundles along with their associated source maps.
 
 ### Environment variables
+
 You'll need to set these environment variables to deploy the app. If you're using the optional `CF_KV_NAMESPACES` or `CF_WORKER_BINDINGS`, they'll need to be set in your local dev environment as well. If you're not sure where to find these values, there's [more info below](#setup-cloudflare-and-s3).
 
 ```bash
@@ -69,6 +70,7 @@ CF_WORKER_BINDINGS="KEY value"
 ```
 
 ### Dev tools
+
 ```bash
 npm start
 ```
@@ -81,8 +83,8 @@ npm test
 npm lint
 ```
 
-
 ### Build and deploy
+
 ```bash
 npm build
 ```
@@ -92,4 +94,9 @@ npm deploy
 ```
 
 ## Setup Cloudflare and S3
+
 [TODO: Steps to follow with cli commands to use]
+
+---
+
+🔬 A Labs project from your friends at [Postlight](https://postlight.com/labs)

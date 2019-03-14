@@ -40,9 +40,10 @@ Package: ${slug}
     console.error("Error creating project:", err);
   }
 
-  // Generate package.json
+  // Generate package.json and readme
   try {
     writePackageJson(slug, targetDir);
+    writeReadme(fullName, targetDir);
   } catch (err) {
     console.error("Error creating package.json file:", err);
   }
@@ -164,4 +165,13 @@ function install(target, isDev, ...deps) {
       reject(`Problem installing dependencies: code ${code}`);
     });
   });
+}
+
+function writeReadme(name, targetDir) {
+  let readme = fs.readFileSync(
+    path.resolve(__dirname, "readme-template.txt"),
+    "utf8"
+  );
+  readme = readme.replace("${PROJECT_NAME}", name);
+  fs.writeFileSync(path.join(targetDir, "README.md"), readme);
 }
