@@ -139,7 +139,7 @@ function writePackageJson(name, targetDir) {
     scripts: {
       build: "node scripts/build.js",
       deploy: "node scripts/deploy.js",
-      lint: "eslint --config config/eslintrc.js --ext .js,.ts,.tsx ./src",
+      lint: "eslint --ext .js,.ts,.tsx ./src",
       start: "node scripts/start.js",
       test: "jest"
     }

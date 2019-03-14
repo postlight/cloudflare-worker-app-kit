@@ -5,8 +5,8 @@ const staticMiddleware = require("serve-static");
 const Cloudworker = require("@dollarshaveclub/cloudworker");
 const webpack = require("webpack");
 const webpackDevMiddleware = require("webpack-dev-middleware");
-const clientConfig = require("../config/webpack.client");
-const workerConfig = require("../config/webpack.worker");
+const clientConfig = require("../webpack.client");
+const workerConfig = require("../webpack.worker");
 const metadata = require("./metadata");
 
 // Static assets server and bundler

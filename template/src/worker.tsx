@@ -15,45 +15,52 @@ addEventListener("fetch", (e: Event) => {
 });
 
 async function router(request: Request): Promise<Response> {
-  // Check if request is for static asset. If so, send request on to origin,
-  // then add a cache header to the response.
-  const staticRoute = match(request, "get", "/assets/*");
-  if (staticRoute) {
-    const assetRes = await fetch(request);
-    const response = new Response(assetRes.body, assetRes);
-    response.headers.set("cache-control", "public, max-age=31536000");
-    return response;
-  }
-
-  // Check for favicon request and fetch from static assets
-  const faviconRoute = match(request, "get", "/favicon.ico");
-  if (faviconRoute) {
-    faviconRoute.url.pathname = "/assets/images/favicon.ico";
-    return fetch(faviconRoute.url.toString());
-  }
-
-  // Render page
-  let scripts;
-  let stylesheets;
-  const { html } = await serverRender();
-  if (JS_FILES) {
-    scripts = JS_FILES.split(" ");
-  }
-  if (CSS_FILES) {
-    stylesheets = CSS_FILES.split(" ");
-  }
-  const renderedPage = page({
-    title: "Worker App",
-    content: html,
-    scripts,
-    stylesheets
-  });
-  return new Response(renderedPage, {
-    status: 200,
-    headers: {
-      "content-type": "text/html; charset=utf-8"
+  try {
+    // Check if request is for static asset. If so, send request on to origin,
+    // then add a cache header to the response.
+    const staticRoute = match(request, "get", "/assets/*");
+    if (staticRoute) {
+      const assetRes = await fetch(request);
+      const response = new Response(assetRes.body, assetRes);
+      response.headers.set("cache-control", "public, max-age=31536000");
+      return response;
     }
-  });
+
+    // Check for favicon request and fetch from static assets
+    const faviconRoute = match(request, "get", "/favicon.ico");
+    if (faviconRoute) {
+      faviconRoute.url.pathname = "/assets/images/favicon.ico";
+      return fetch(faviconRoute.url.toString());
+    }
+
+    // Render page
+    let scripts;
+    let stylesheets;
+    const { html } = await serverRender();
+    if (JS_FILES) {
+      scripts = JS_FILES.split(" ");
+    }
+    if (CSS_FILES) {
+      stylesheets = CSS_FILES.split(" ");
+    }
+    const renderedPage = page({
+      title: "Worker App",
+      content: html,
+      scripts,
+      stylesheets
+    });
+    return new Response(renderedPage, {
+      status: 200,
+      headers: {
+        "content-type": "text/html; charset=utf-8"
+      }
+    });
+  } catch (err) {
+    return new Response("Internal Server Error", {
+      status: 500,
+      statusText: err
+    });
+  }
 }
 
 interface RenderResult {

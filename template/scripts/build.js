@@ -1,6 +1,6 @@
 const webpack = require("webpack");
-const clientConfig = require("../config/webpack.client");
-const workerConfig = require("../config/webpack.worker");
+const clientConfig = require("../webpack.client");
+const workerConfig = require("../webpack.worker");
 
 console.time("Build complete");
 

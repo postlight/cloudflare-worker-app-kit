@@ -1,4 +1,4 @@
-import UrlPattern from "url-pattern";
+import * as UrlPattern from "url-pattern";
 
 interface Result {
   params: { [key: string]: string };
@@ -17,8 +17,8 @@ export function match(
   }
 
   const url = new URL(request.url);
-  const { match } = new UrlPattern(pattern);
-  const params = match(url.pathname);
+  const patternMatcher = new UrlPattern(pattern);
+  const params = patternMatcher.match(url.pathname);
   if (params == null) {
     return;
   }
