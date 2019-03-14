@@ -17,6 +17,9 @@ const bucket = process.env.BUCKET;
 
 (async () => {
   try {
+    // check
+    if (!assertConfig()) return;
+
     // build
     await npm("install");
     const files = await build();
@@ -40,6 +43,33 @@ const bucket = process.env.BUCKET;
     console.error(err);
   }
 })();
+
+function assertConfig() {
+  const missing = [];
+  [
+    "BUCKET",
+    "AWS_KEY",
+    "AWS_SECRET",
+    "AWS_REGION",
+    "CF_ZONE_ID",
+    "CF_KEY",
+    "CF_EMAIL"
+  ].forEach(ev => {
+    if (!process.env[ev] || process.env[ev].length < 1) {
+      missing.push(ev);
+    }
+  });
+  if (missing.length > 0) {
+    console.log(`
+Deploy failed
+-------------
+The following environment variables must be set:
+${missing.join(" ")}
+`);
+    return false;
+  }
+  return true;
+}
 
 function npm(...commands) {
   const result = spawn.sync("npm", commands, { stdio: "inherit" });
