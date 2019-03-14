@@ -1,6 +1,7 @@
 import { h } from "preact";
 import { render } from "preact-render-to-string";
 import { page } from "./page";
+import { match } from "./lib/request-match";
 import { App } from "./components/app";
 
 // Worker bindings defined in metadata.js
@@ -14,16 +15,21 @@ addEventListener("fetch", (e: Event) => {
 });
 
 async function router(request: Request): Promise<Response> {
-  const url = new URL(request.url);
-  const segments = url.pathname.split("/");
-
-  // First, check if request is for static asset. If so, send request on to
-  // origin, the add a cache header to the response.
-  if (segments[1] && segments[1] === "assets") {
+  // Check if request is for static asset. If so, send request on to origin,
+  // then add a cache header to the response.
+  const staticRoute = match(request, "get", "/assets/*");
+  if (staticRoute) {
     const assetRes = await fetch(request);
     const response = new Response(assetRes.body, assetRes);
-    // response.headers.set("cache-control", "public, max-age=31536000");
+    response.headers.set("cache-control", "public, max-age=31536000");
     return response;
+  }
+
+  // Check for favicon request and fetch from static assets
+  const faviconRoute = match(request, "get", "/favicon.ico");
+  if (faviconRoute) {
+    faviconRoute.url.pathname = "/assets/images/favicon.ico";
+    return fetch(faviconRoute.url.toString());
   }
 
   // Render page

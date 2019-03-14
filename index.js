@@ -53,7 +53,13 @@ Package: ${slug}
 Installing dependencies...
 `);
     await Promise.all([
-      install(targetDir, false, "preact", "preact-render-to-string@4.1.0"),
+      install(
+        targetDir,
+        false,
+        "preact",
+        "preact-render-to-string@4.1.0",
+        "url-pattern"
+      ),
       install(
         targetDir,
         true,
