@@ -11,10 +11,10 @@ declare const CSS_FILES: string | undefined;
 // Handle all requests hitting the worker
 addEventListener("fetch", (e: Event) => {
   const fe = e as FetchEvent;
-  fe.respondWith(router(fe.request));
+  fe.respondWith(handleFetch(fe.request));
 });
 
-async function router(request: Request): Promise<Response> {
+async function handleFetch(request: Request): Promise<Response> {
   try {
     // Check if request is for static asset. If so, send request on to origin,
     // then add a cache header to the response.
