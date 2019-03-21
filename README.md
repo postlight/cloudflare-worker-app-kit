@@ -2,6 +2,9 @@
 
 A handy set of tools for creating, developing, testing, and deploying a [Cloudflare Worker app](https://developers.cloudflare.com/workers/about/). No configuration, just build it and ship it.
 
+### Demo
+A real app built with these tools — [secretmsg.app](https://secretmsg.app) ([repo](https://github.com/postlight/secretmsg)).
+
 ## Get started
 
 ```bash
