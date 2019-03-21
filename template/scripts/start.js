@@ -51,6 +51,9 @@ function notFound(req, res) {
 // fetched from the static asset server, then a cloudworker is initialized, the
 // request is dispatched, and finally, the worker response is sent back.
 const workerPort = 3030;
+
+// Bindings are exposed as variables in the root of the worker script.
+const bindings = mapMetadataToBindings();
 http
   .createServer(async (req, res) => {
     let script;
@@ -68,8 +71,6 @@ http
     }
 
     try {
-      // Bindings are exposed as variables in the root of the worker script.
-      const bindings = mapMetadataToBindings();
       const worker = new Cloudworker(script, { bindings });
       const workerReq = new Cloudworker.Request(
         `http://localhost:${staticPort}${req.url}`,
