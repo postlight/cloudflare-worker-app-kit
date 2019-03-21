@@ -1,7 +1,7 @@
 {
   "name": "@postlight/cloudflare-worker-app-kit",
   "description": "Create a TypeScript app that is delivered with CloudFlare Workers",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Postlight",
   "bin": {
     "cloudflare-worker-app-kit": "index.js"
