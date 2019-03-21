@@ -1,6 +1,7 @@
 const path = require("path");
 const http = require("http");
 const fetch = require("node-fetch");
+const getRawBody = require("raw-body");
 const staticMiddleware = require("serve-static");
 const Cloudworker = require("@dollarshaveclub/cloudworker");
 const webpack = require("webpack");
