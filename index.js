@@ -84,6 +84,7 @@ Installing dependencies...
         "node-fetch",
         "null-loader",
         "prettier",
+        "raw-body",
         "serve-static",
         "style-loader",
         "ts-jest",
