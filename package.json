@@ -1,5 +1,5 @@
 {
-  "name": "cloudflare-worker-app-kit",
+  "name": "@postlight/cloudflare-worker-app-kit",
   "description": "Create a TypeScript app that is delivered with CloudFlare Workers",
   "version": "1.0.0",
   "author": "Postlight",
@@ -21,7 +21,12 @@
   },
   "homepage": "https://github.com/postlight/cloudflare-worker-app-kit",
   "keywords": [
-    "oclif"
+    "cloudflare",
+    "workers",
+    "starter kit",
+    "cli",
+    "typescript",
+    "server-side rendering"
   ],
   "license": "MIT",
   "main": "index.js",
