@@ -1,10 +1,10 @@
 import { match } from "./request-match";
 
 class MockRequest {
-  url: string;
-  method: string;
+  public url: string;
+  public method: string;
 
-  constructor(url: string, options: { method: string }) {
+  public constructor(url: string, options: { method: string }) {
     this.url = url;
     this.method = options.method;
   }
@@ -32,6 +32,6 @@ test("parse url params", () => {
   if (route) {
     expect(route.params.id).toBe("123xyz");
   } else {
-    fail(new Error("No match found"));
+    throw new Error("No match found");
   }
 });
