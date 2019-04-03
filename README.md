@@ -141,4 +141,4 @@ While setting up your bucket, you should also gather some environment variable v
 
 ---
 
-🔬 A Labs project from your friends at [Postlight](https://postlight.com/labs)
+🔬 A Labs project from your friends at [Postlight](https://postlight.com/labs). Happy coding!
