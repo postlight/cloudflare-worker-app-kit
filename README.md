@@ -1,6 +1,6 @@
-# cloudflare-worker-app-kit
+# Cloudflare Worker App Kit
 
-A handy set of tools for creating, developing, testing, and deploying a [Cloudflare Worker app](https://developers.cloudflare.com/workers/about/). No configuration, just build it and ship it.
+[Postlight](https://postlight.com)'s Cloudflare Worker App Kit is a handy set of tools for creating, developing, testing, and deploying a [Cloudflare Worker app](https://developers.cloudflare.com/workers/about/). No configuration, just build it and ship it. Read all about it in [this handy introduction](https://postlight.com/trackchanges/introducing-postlights-cloudflare-worker-app-kit).
 
 ### Demo
 
@@ -141,4 +141,4 @@ While setting up your bucket, you should also gather some environment variable v
 
 ---
 
-🔬 A Labs project from your friends at [Postlight](https://postlight.com/labs). Happy coding!
+🔬 A Labs project from your friends at [Postlight](https://postlight.com). Happy coding!
